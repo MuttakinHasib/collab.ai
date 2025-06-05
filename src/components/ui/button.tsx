@@ -23,10 +23,10 @@ const buttonVariants = cva(
       },
       size: {
         default:
-          "px-4 py-2.5 md:px-6 md:py-3 has-[>svg]:px-3 md:has-[>svg]:px-5",
-        sm: "px-3 py-2 md:px-4 md:py-2.5 rounded-md gap-1.5 has-[>svg]:px-2.5 md:has-[>svg]:px-3 text-xs md:text-sm",
-        lg: "px-6 py-3 md:px-8 md:py-4 rounded-md has-[>svg]:px-5 md:has-[>svg]:px-6 text-base md:text-lg",
-        icon: "p-2.5 md:p-3",
+          "h-10 px-4 py-2.5 md:h-11 md:px-6 md:py-3 has-[>svg]:px-3 md:has-[>svg]:px-5",
+        sm: "h-8 px-3 py-2 md:h-9 md:px-4 rounded-md gap-1.5 has-[>svg]:px-2.5 md:has-[>svg]:px-3 text-xs md:text-sm",
+        lg: "h-11 px-6 py-3 md:h-12 md:px-8 rounded-md has-[>svg]:px-5 md:has-[>svg]:px-6 text-base md:text-lg",
+        icon: "size-9 md:size-11",
       },
     },
     defaultVariants: {

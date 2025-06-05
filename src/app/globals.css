@@ -119,12 +119,6 @@
   body {
     @apply bg-background text-foreground text-sm md:text-base leading-normal md:leading-relaxed;
   }
-  button {
-    @apply cursor-pointer;
-  }
-  button:disabled {
-    @apply cursor-not-allowed;
-  }
   h1 {
     @apply text-2xl md:text-3xl font-bold tracking-tight;
   }
