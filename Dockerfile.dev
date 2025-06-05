@@ -1,0 +1,22 @@
+# Development Dockerfile - Latest Bun
+FROM oven/bun:alpine
+
+# Install dependencies for development and health checks
+RUN apk add --no-cache libc6-compat curl
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json bun.lock ./
+
+# Install dependencies
+RUN bun install
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Start development server
+CMD ["bun", "run", "dev"] 

@@ -1,0 +1,20 @@
+# Docker Compose Override for Local Development
+# This file is automatically merged with docker-compose.yml
+# Use this for local environment customizations
+
+services:
+  web-dev:
+    environment:
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    # Uncomment to add environment file
+    # env_file:
+    #   - .env.local
+
+  web:
+    environment:
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    # Uncomment to add environment file
+    # env_file:
+    #   - .env.production
