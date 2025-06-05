@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/constants";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -53,6 +54,14 @@ const nextConfig: NextConfig = {
             value: "no-cache, no-store, must-revalidate",
           },
         ],
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${API_BASE_URL}/api/:path*/`,
       },
     ];
   },
