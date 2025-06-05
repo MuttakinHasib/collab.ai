@@ -1,0 +1,392 @@
+---
+description: Next.js React Redux TypeScript Cursor Rules
+globs: 
+alwaysApply: false
+---
+# Next.js + React + Zustand + TypeScript Cursor Rules
+
+This guide outlines best practices, conventions, and standards for development with Next.js, React, Zustand, TypeScript, JavaScript, HTML, CSS, and UI frameworks.
+
+## Development Philosophy
+
+- Write clean, maintainable, and scalable code
+- Follow SOLID principles and TypeScript best practices
+- Prefer functional and declarative programming patterns
+- Emphasize type safety and static analysis
+- Practice component-driven development
+- Optimize for performance and accessibility
+
+## Code Implementation Guidelines
+
+### Planning Phase
+
+- Begin with step-by-step planning and clear requirements
+- Write detailed pseudocode before implementation
+- Document component architecture and data flow
+- Define TypeScript interfaces before implementation
+- Consider edge cases and error scenarios
+
+### Code Style
+
+- Use 2 spaces for indentation (tabs for accessibility if required)
+- Use single quotes for strings, double quotes for JSX attributes
+- Always use semicolons for consistency
+- Eliminate unused variables and imports
+- Add space after keywords and before function declaration parentheses
+- Always use strict equality (===) instead of loose equality (==)
+- Space infix operators and add space after commas
+- Keep else statements on the same line as closing curly braces
+- Use curly braces for multi-line if statements
+- Always handle error parameters in callbacks
+- Limit line length to 80 characters
+- Use trailing commas in multiline object/array literals
+
+## Naming Conventions
+
+### General Rules
+
+- **PascalCase**: Components, Type definitions, Interfaces, Classes
+- **kebab-case**: Directory names, File names
+- **camelCase**: Variables, Functions, Methods, Hooks, Properties, Props
+- **UPPER_SNAKE_CASE**: Environment variables, Constants, Global configurations
+
+### Specific Naming Patterns
+
+- Prefix event handlers with 'handle': `handleClick`, `handleSubmit`
+- Prefix boolean variables with verbs: `isLoading`, `hasError`, `canSubmit`
+- Prefix custom hooks with 'use': `useAuth`, `useUserData`
+- Use complete words over abbreviations except for common ones: `err`, `req`, `res`, `props`, `ref`
+
+### File Structure
+
+```
+src/
+├── app/                 # Next.js App Router
+├── components/
+│   ├── ui/             # Reusable UI components
+│   ├── forms/          # Form components
+│   └── layout/         # Layout components
+├── stores/             # Zustand stores
+├── hooks/              # Custom hooks
+├── types/              # TypeScript definitions
+├── utils/              # Utility functions
+└── lib/                # External library configurations
+```
+
+## React Best Practices
+
+### Component Architecture
+
+- Use functional components with TypeScript interfaces
+- Define components using function keyword or arrow functions consistently
+- Extract reusable logic into custom hooks
+- Implement proper component composition patterns
+- Use React.memo() strategically for performance optimization
+- Implement proper cleanup in useEffect hooks with AbortController
+
+### Performance Optimization
+
+- Use useCallback for memoizing callback functions passed as props
+- Implement useMemo for expensive computations
+- Avoid inline function definitions in JSX render
+- Implement code splitting using dynamic imports and React.lazy
+- Use proper key props in lists (never use index as key)
+- Implement virtualization for large lists
+
+### Hooks Guidelines
+
+- Always include dependencies in useEffect dependency arrays
+- Use custom hooks to encapsulate complex state logic
+- Implement proper error handling in async operations
+- Use AbortController for cleanup in data fetching
+
+## Next.js Best Practices
+
+### App Router Guidelines
+
+- Default to Server Components for better performance
+- Use 'use client' directive only when necessary:
+  - Event listeners and browser APIs
+  - State management (useState, useEffect)
+  - Client-side-only libraries
+- Implement proper error boundaries and loading states
+- Use proper metadata management with Metadata API
+
+### Built-in Components
+
+- Use Next.js Image component for optimized images
+- Use Next.js Link component for client-side navigation
+- Use Next.js Script component for external scripts
+- Implement proper loading and error pages
+
+### Data Fetching
+
+- Use server-side data fetching in Server Components
+- Implement proper caching strategies with fetch options
+- Use SWR or TanStack Query for client-side data fetching
+- Handle loading states and errors appropriately
+
+## TypeScript Implementation
+
+### Core Rules
+
+- Enable strict mode in tsconfig.json
+- Define clear interfaces for all component props and state
+- Use type guards to handle undefined/null values safely
+- Apply generics for type flexibility where appropriate
+- Utilize TypeScript utility types: Partial, Pick, Omit, Record
+- Prefer interface over type for object structures
+- Use discriminated unions for complex state management
+
+### Type Definition Patterns
+
+```typescript
+// Interfaces for components
+interface UserProfileProps {
+  user: User;
+  onEdit?: (user: User) => void;
+  className?: string;
+}
+
+// Utility types
+type CreateUserRequest = Omit<User, "id" | "createdAt" | "updatedAt">;
+type UserFormData = Pick<User, "name" | "email">;
+
+// Discriminated unions
+type LoadingState = { status: "idle" } | { status: "loading" } | { status: "success"; data: User } | { status: "error"; error: string };
+```
+
+## State Management with Zustand
+
+### Store Structure
+
+- Separate state and actions in interface definitions
+- Use TypeScript for complete store typing
+- Implement async actions with proper error handling
+- Use selectors to prevent unnecessary re-renders
+- Implement persistence when needed with proper partitioning
+
+### Store Patterns
+
+```typescript
+interface UserState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+}
+
+interface UserActions {
+  setUser: (user: User) => void;
+  clearUser: () => void;
+  loginUser: (credentials: LoginCredentials) => Promise<void>;
+}
+
+type UserStore = UserState & UserActions;
+
+export const useUserStore = create<UserStore>((set, get) => ({
+  // State
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null,
+
+  // Actions
+  setUser: (user) => set({ user, isAuthenticated: true, error: null }),
+  clearUser: () => set({ user: null, isAuthenticated: false, error: null }),
+  loginUser: async (credentials) => {
+    set({ isLoading: true, error: null });
+    try {
+      const user = await authApi.login(credentials);
+      get().setUser(user);
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+}));
+```
+
+### Usage Patterns
+
+- Use selective subscriptions to prevent unnecessary re-renders
+- Create computed selectors for derived state
+- Avoid subscribing to entire store in components
+
+## UI and Styling
+
+### Component Libraries
+
+- Use Shadcn UI for consistent, accessible component design
+- Integrate Radix UI primitives for complex interactive components
+- Apply composition patterns for modular, reusable components
+- Implement proper component variants with class-variance-authority
+
+### Styling Guidelines
+
+- Use Tailwind CSS for utility-first styling
+- Design with mobile-first, responsive principles
+- Implement dark mode using CSS variables or Tailwind's dark mode
+- Ensure color contrast ratios meet accessibility standards
+- Maintain consistent spacing using Tailwind's spacing scale
+- Define CSS variables for theme colors and custom properties
+
+### CSS Organization
+
+- Use Tailwind's @layer directive for custom utilities
+- Implement proper CSS variable naming conventions
+- Use clsx or cn utility for conditional class names
+
+## Form Handling and Validation
+
+### Form Libraries
+
+- Use React Hook Form for form state management
+- Implement Zod for schema validation and type inference
+- Handle form errors with proper user feedback
+- Implement proper loading states during submission
+
+### Validation Patterns
+
+```typescript
+const userSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  age: z.number().min(18, "Must be at least 18 years old"),
+});
+
+type UserFormData = z.infer<typeof userSchema>;
+```
+
+## Error Handling and Validation
+
+### Error Boundaries
+
+- Implement error boundaries to catch React component errors
+- Log errors to external services (Sentry, LogRocket)
+- Design user-friendly fallback UIs for error states
+- Handle different error types appropriately
+
+### API Error Handling
+
+- Create custom error classes for different error types
+- Implement centralized error handling for API requests
+- Handle network errors, validation errors, and server errors differently
+- Provide meaningful error messages to users
+
+### Input Validation
+
+- Validate and sanitize all user inputs
+- Use DOMPurify for sanitizing HTML content
+- Implement proper XSS prevention measures
+- Validate data on both client and server sides
+
+## Testing Strategy
+
+### Unit Testing
+
+- Write tests for all components, hooks, and utilities
+- Use Jest and React Testing Library for component testing
+- Follow Arrange-Act-Assert pattern for test structure
+- Mock external dependencies and API calls
+- Test both happy paths and error scenarios
+
+### Integration Testing
+
+- Focus on user workflows and critical application flows
+- Set up proper test environments with cleanup
+- Use MSW for API mocking in integration tests
+- Test accessibility requirements with testing-library/jest-dom
+
+### Store Testing
+
+- Test Zustand stores in isolation
+- Test both synchronous and asynchronous actions
+- Verify state updates and side effects
+- Mock external dependencies in store tests
+
+## Accessibility (a11y)
+
+### Core Requirements
+
+- Use semantic HTML elements for proper document structure
+- Implement proper ARIA attributes where semantic HTML is insufficient
+- Ensure full keyboard navigation support for all interactive elements
+- Manage focus order and focus visibility effectively
+- Maintain accessible color contrast ratios (WCAG 2.1 AA)
+- Follow logical heading hierarchy (h1-h6)
+- Provide alternative text for images and icons
+- Implement proper form labels and error announcements
+
+### Implementation Guidelines
+
+- Test with screen readers during development
+- Use proper ARIA roles, states, and properties
+- Implement focus traps for modals and overlays
+- Provide skip links for keyboard navigation
+- Ensure all interactive elements have accessible names
+
+## Security Best Practices
+
+### Input Security
+
+- Sanitize all user inputs to prevent XSS attacks
+- Use Content Security Policy (CSP) headers
+- Validate data types and formats on both client and server
+- Escape user-generated content before rendering
+
+### Authentication & Authorization
+
+- Implement proper authentication flows
+- Use secure session management
+- Store sensitive data securely (never in localStorage for tokens)
+- Implement proper CSRF protection
+
+## Internationalization (i18n)
+
+### Implementation
+
+- Use next-i18next or similar for translation management
+- Implement proper locale detection and switching
+- Use proper number, date, and currency formatting
+- Support RTL languages when required
+- Extract all user-facing strings to translation files
+
+## Performance Optimization
+
+### Code Splitting
+
+- Implement route-based code splitting with Next.js dynamic imports
+- Use React.lazy for component-level code splitting
+- Implement proper loading states for lazy-loaded components
+- Optimize bundle sizes with webpack-bundle-analyzer
+
+### Image and Asset Optimization
+
+- Use Next.js Image component with proper sizing and formats
+- Implement proper image loading strategies (lazy, eager, priority)
+- Optimize and compress images before deployment
+- Use modern image formats (WebP, AVIF) with fallbacks
+
+### Runtime Performance
+
+- Minimize re-renders with proper memoization
+- Use proper key props in lists
+- Implement virtualization for large datasets
+- Monitor Core Web Vitals and performance metrics
+
+## Documentation Standards
+
+### Code Documentation
+
+- Use JSDoc for all public functions, components, and hooks
+- Document complex business logic and algorithms
+- Include usage examples in component documentation
+- Document API interfaces and data structures
+- Keep documentation up-to-date with code changes
+
+### README and Project Documentation
+
+- Provide clear setup and installation instructions
+- Document environment variables and configuration
+- Include deployment instructions and requirements
+- Document coding standards and contribution guidelines
