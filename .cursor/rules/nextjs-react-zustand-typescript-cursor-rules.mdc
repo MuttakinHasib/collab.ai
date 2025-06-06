@@ -1,7 +1,7 @@
 ---
-description: Next.js + React + Zustand + TypeScript Cursor Rules
+description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # Next.js + React + Zustand + TypeScript Cursor Rules
 
@@ -123,7 +123,13 @@ src/
 
 - Use server-side data fetching in Server Components
 - Implement proper caching strategies with fetch options
-- Use SWR or TanStack Query for client-side data fetching
+- Use `@tanstack/react-query` for client-side data fetching:
+  - **Query Keys**: Define descriptive, serializable array keys for queries (e.g., `[TODO_SERVICES.getTodos.name, { filter: 'active' }]`). This allows for granular invalidation.
+  - **Query Functions**: Ensure query functions are async and return a promise.
+  - **Mutations (`useMutation`)**: Use for creating, updating, or deleting data. Invalidate queries in `onSuccess` to refetch data automatically.
+  - **Custom Hooks**: Encapsulate related queries and mutations into custom hooks for reusability (e.g., `useTodos`, `useAddTodo`).
+  - **`staleTime`**: Configure `staleTime` to define how long data is considered fresh, preventing unnecessary refetches.
+  - **Optimistic Updates**: Implement for a better user experience, ensuring a rollback mechanism on error.
 - Handle loading states and errors appropriately
 
 ## TypeScript Implementation
@@ -153,7 +159,11 @@ type CreateUserRequest = Omit<User, "id" | "createdAt" | "updatedAt">;
 type UserFormData = Pick<User, "name" | "email">;
 
 // Discriminated unions
-type LoadingState = { status: "idle" } | { status: "loading" } | { status: "success"; data: User } | { status: "error"; error: string };
+type LoadingState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; data: User }
+  | { status: "error"; error: string };
 ```
 
 ## State Management with Zustand
@@ -234,28 +244,82 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
 - Use Tailwind's @layer directive for custom utilities
 - Implement proper CSS variable naming conventions
-- Use clsx or cn utility for conditional class names
+- Use `clsx` or `cn` utility for conditional class names
 
-## Form Handling and Validation
+## Form Handling and Validation with React Hook Form and Zod
 
-### Form Libraries
+- **Schema-First Approach**: Always start by defining a `zod` schema. It serves as the single source of truth for validation rules and TypeScript types.
+- **Type Inference**: Use `z.infer<typeof yourSchema>` to automatically generate a TypeScript type from your Zod schema. Avoid creating manual `interface` or `type` definitions for form data.
+- **Resolver**: Integrate Zod with React Hook Form using the `@hookform/resolvers/zod` package.
 
-- Use React Hook Form for form state management
-- Implement Zod for schema validation and type inference
-- Handle form errors with proper user feedback
-- Implement proper loading states during submission
+### Implementation Guide
 
-### Validation Patterns
+1.  **Define Schema & Type**:
 
-```typescript
-const userSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  age: z.number().min(18, "Must be at least 18 years old"),
-});
+    ```typescript
+    import { z } from "zod";
 
-type UserFormData = z.infer<typeof userSchema>;
-```
+    const userSchema = z.object({
+      name: z.string().min(2, "Name must be at least 2 characters."),
+      email: z.string().email("A valid email is required."),
+      age: z.number().min(18, "You must be at least 18."),
+    });
+
+    type UserFormData = z.infer<typeof userSchema>;
+    ```
+
+2.  **Setup `useForm` Hook**:
+
+    - Provide the inferred type to `useForm<UserFormData>`.
+    - Configure the `resolver` with `zodResolver(userSchema)`.
+    - Set `defaultValues` to initialize the form.
+
+    ```typescript
+    import { useForm, SubmitHandler } from "react-hook-form";
+    import { zodResolver } from "@hookform/resolvers/zod";
+
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+    } = useForm<UserFormData>({
+      resolver: zodResolver(userSchema),
+      defaultValues: { name: "", email: "" },
+    });
+    ```
+
+3.  **Connect Inputs and Display Errors**:
+
+    - Spread `{...register("fieldName")}` onto your input components.
+    - For numeric inputs, use `{...register("age", { valueAsNumber: true })}`.
+    - Conditionally render error messages from the `errors` object.
+
+    ```jsx
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <label htmlFor="name">Name</label>
+        <input id="name" {...register("name")} />
+        {errors.name && <p>{errors.name.message}</p>}
+      </div>
+      {/* ... other fields */}
+      <button type="submit">Submit</button>
+    </form>
+    ```
+
+4.  **Handle Submission**:
+    - Create an `onSubmit` function with the type `SubmitHandler<UserFormData>`.
+    - `handleSubmit` will automatically call your `onSubmit` function with validated form data.
+    ```typescript
+    const onSubmit: SubmitHandler<UserFormData> = (data) => {
+      // API call or other logic
+      console.log(data);
+    };
+    ```
+
+### Advanced Usage
+
+- **Controlled Components**: Use the `<Controller>` component for UI library components that don't expose a `ref` (e.g., `Select`, `DatePicker`).
+- **Dynamic Fields**: Use `useFieldArray` to manage arrays of fields (e.g., adding multiple tags or team members).
 
 ## Error Handling and Validation
 

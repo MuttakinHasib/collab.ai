@@ -5,4 +5,5 @@ export type RequestOptions = {
   includeCookies?: boolean;
 };
 
-export type RequestBody = Record<string, unknown> | FormData;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RequestBody = Record<string, any> | FormData;
