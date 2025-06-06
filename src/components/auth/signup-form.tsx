@@ -1,13 +1,17 @@
-import { cn } from "@/utils";
+"use client";
+
+import { useRegister } from "@/hooks";
 import Link from "next/link";
 import { Button, Input, Label } from "../ui";
 
-export function SignUpForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export function SignUpForm() {
+  const {
+    form: { register },
+    onSubmit,
+  } = useRegister();
+
   return (
-    <form className={cn("flex flex-col gap-6 md:gap-8", className)} {...props}>
+    <form className="flex flex-col gap-6 md:gap-8" {...{ onSubmit }}>
       <div className="flex flex-col items-center gap-2 md:gap-3 text-center">
         <h1 className="text-2xl md:text-3xl font-bold">Create an account</h1>
         <p className="text-muted-foreground text-sm md:text-base text-balance max-w-sm">
@@ -18,43 +22,27 @@ export function SignUpForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
           <div className="grid gap-3 md:gap-4">
             <Label htmlFor="first_name">First Name</Label>
-            <Input
-              id="first_name"
-              name="first_name"
-              type="text"
-              placeholder="John"
-              required
-            />
+            <Input type="text" placeholder="John" {...register("first_name")} />
           </div>
           <div className="grid gap-3 md:gap-4">
             <Label htmlFor="last_name">Last Name</Label>
-            <Input
-              id="last_name"
-              name="last_name"
-              type="text"
-              placeholder="Doe"
-              required
-            />
+            <Input type="text" placeholder="Doe" {...register("last_name")} />
           </div>
         </div>
         <div className="grid gap-3 md:gap-4">
           <Label htmlFor="email">Email</Label>
           <Input
-            id="email"
-            name="email"
             type="email"
             placeholder="m@example.com"
-            required
+            {...register("email")}
           />
         </div>
         <div className="grid gap-3 md:gap-4">
           <Label htmlFor="password">Password</Label>
           <Input
-            id="password"
-            name="password"
             type="password"
             placeholder="Create a secure password"
-            required
+            {...register("password")}
           />
         </div>
         <Button type="submit" className="w-full">

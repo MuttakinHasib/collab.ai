@@ -1,37 +1,40 @@
-import { AUTH_SERVICE } from "@/services/auth";
-import { RegisterPayload, User } from "@/types";
-import type { UseMutationResult } from "@tanstack/react-query";
+import { registerSchema } from "@/schemas";
+import { AUTH_SERVICE } from "@/services";
+import { RegisterPayload } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 
-/**
- * Hook for user registration functionality
- *
- * @returns {UseMutationResult<User, Error, RegisterPayload>} Mutation result object containing
- * isLoading, isError, error, and mutate function to execute registration
- *
- * @example
- * ```tsx
- * const { mutate: register, isLoading } = useRegister();
- *
- * const handleSubmit = (data: RegisterPayload) => {
- *   register(data, {
- *     onSuccess: (data) => {
- *       // Handle successful registration
- *     }
- *   });
- * };
- * ```
- */
-export const useRegister = (): UseMutationResult<
-  User,
-  Error,
-  RegisterPayload
-> => {
-  return useMutation({
+export const useRegister = () => {
+  const { handleSubmit, ...form } = useForm<RegisterPayload>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      first_name: "",
+      last_name: "",
+    },
+  });
+
+  const { mutateAsync } = useMutation({
     mutationKey: [AUTH_SERVICE.register.name],
     mutationFn: AUTH_SERVICE.register,
     onError: (error) => {
       console.error("Registration failed:", error);
     },
   });
+
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      await mutateAsync(data);
+      form.reset();
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
+  });
+
+  return {
+    form,
+    onSubmit,
+  };
 };
