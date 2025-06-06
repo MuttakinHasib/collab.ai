@@ -44,7 +44,7 @@
 }
 
 :root {
-  --radius: 0.75rem; /* 12px - increased from 10px */
+  --radius: 0.625rem; /* 10px */
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
@@ -119,6 +119,7 @@
   body {
     @apply bg-background text-foreground text-sm md:text-base leading-normal md:leading-relaxed;
   }
+
   h1 {
     @apply text-2xl md:text-3xl font-bold tracking-tight;
   }
@@ -131,7 +132,15 @@
   h4 {
     @apply text-base md:text-lg font-semibold tracking-tight;
   }
+
   p {
     @apply text-sm md:text-base leading-normal md:leading-relaxed;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+  button:disabled {
+    @apply cursor-not-allowed;
   }
 }

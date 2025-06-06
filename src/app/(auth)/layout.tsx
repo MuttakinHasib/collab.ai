@@ -20,7 +20,7 @@ export default function AuthLayout({
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-end">
           <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-sm">
               <GalleryVerticalEnd className="size-4" />
             </div>
             Collab Inc.
